@@ -46,9 +46,8 @@ class CreateOrganization extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->io = new SymfonyStyle($input, $output);
-        $this->io->title('Criar uma nova Organização');
-        $e = $this->addEmail();
-        var_dump($e);
+        $this->io->title('Deseja criar uma nova Organização');
+        var_dump($this->addEmail());
         return;
 
         $organization = [
@@ -118,27 +117,22 @@ class CreateOrganization extends Command
     }
 
     private function addEmail(){
-        $helper = $this->getHelper('question');
-        $question = new Question('E-mail do usuário?', null);
-        $question->setValidator(function ($value) {
-            $validator = new EmailAddress();
-            $validatorLen = new StringLength(array('max' => 50));
+     return   $this->io->ask('E-mail do usuário?', null, function ($value) {
 
+            $validator = new EmailAddress();
             $validator->setOptions(array('domain' => false));
             if (!$validator->isValid($value)){
                 $this->io->warning(' A String passada não corresponde a um e-mail válido.');
                 $this->addEmail();
             }
 
-
+            $validatorLen = new StringLength(array('max' => 50));
             if (!$validatorLen->isValid($value)){
                 $this->io->warning(' A string passada não corresponde as exigências, não pode ser maior do que 50 caracteres');
-                return null;
+                $this->addEmail();
             }
             return $value;
         });
-        $email =   $this->io->ask('E-mail do usuário?', null);
-return $email;
     }
     private function addPhone(){
         $ar["phone"] = $this->filters($this->io->ask('Phone ?', null));
