@@ -117,20 +117,21 @@ class CreateOrganization extends Command
     }
 
     private function addEmail(){
-     return   $this->io->ask('E-mail do usuário?', null, function ($value) {
+        return $this->io->ask('E-mail do usuário?', null, function ($value) {
 
             $validator = new EmailAddress();
             $validator->setOptions(array('domain' => false));
             if (!$validator->isValid($value)){
                 $this->io->warning(' A String passada não corresponde a um e-mail válido.');
-                $this->addEmail();
+                return $this->addEmail();
             }
 
             $validatorLen = new StringLength(array('max' => 50));
             if (!$validatorLen->isValid($value)){
                 $this->io->warning(' A string passada não corresponde as exigências, não pode ser maior do que 50 caracteres');
-                $this->addEmail();
+                return $this->addEmail();
             }
+
             return $value;
         });
     }
